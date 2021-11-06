@@ -59,7 +59,10 @@ class SVM:
         x : numpy array of shape (num_examples_to_infer, num_features)
         returns : numpy array of shape (num_examples_to_infer, num_classes)
         """
-        pass
+        y = x @ self.w
+        pred = np.argmax(y, axis=1)
+
+        return self.make_one_versus_all_labels(pred, y.shape[1])
 
     def compute_accuracy(self, y_inferred, y):
         """
@@ -67,7 +70,12 @@ class SVM:
         y : numpy array of shape (num_examples, num_classes)
         returns : float
         """
-        pass
+        true = np.argmax(y, axis=1)
+        pred = np.argmax(y_inferred, axis=1)
+        good = np.sum(pred == true)
+
+        return good/len(y)
+
 
     def fit(self, x_train, y_train, x_test, y_test):
         """
@@ -153,6 +161,6 @@ if __name__ == "__main__":
     ## to compute the gradient or loss before training, do the following:
     y_train_ova = svm.make_one_versus_all_labels(y_train, 8)  # one-versus-all labels
     svm.w = np.zeros([3073, 8])
+    y_inferred = svm.infer(x_test)
     # grad = svm.compute_gradient(x_train, y_train_ova)
     loss = svm.compute_loss(x_train, y_train_ova)
-    print(loss)
