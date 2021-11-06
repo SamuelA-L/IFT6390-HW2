@@ -15,7 +15,14 @@ class SVM:
         m : int (num_classes)
         returns : numpy array of shape (n, m)
         """
-        pass
+        n = len(y)
+        k = 0
+        ans = (np.ones((n, m))*(-1)).astype('int')
+        for i in range(n):
+            k = y[i]
+            ans[i, k] = 1
+
+        return ans
 
     def compute_loss(self, x, y):
         """
