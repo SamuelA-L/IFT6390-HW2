@@ -24,13 +24,19 @@ class SVM:
 
         return ans
 
+
     def compute_loss(self, x, y):
         """
         x : numpy array of shape (minibatch size, num_features)
         y : numpy array of shape (minibatch size, num_classes)
         returns : float
         """
-        pass
+        n, m = x.shape
+        hinge_loss = 1/n * np.sum(np.maximum(0, 2 - (x @ self.w) * y)**2)
+        regularisation = self.C/2 * np.sum(np.linalg.norm(self.w)**2)
+        loss = float(hinge_loss + regularisation)
+
+        return loss
 
     def compute_gradient(self, x, y):
         """
@@ -137,15 +143,16 @@ if __name__ == "__main__":
 
     x_train, y_train, x_test, y_test = load_data()
 
-    print("Fitting the model...")
+    # print("Fitting the model...")
     svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
-    train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
+    # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
     # # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
 
     ## to compute the gradient or loss before training, do the following:
-    # y_train_ova = svm.make_one_versus_all_labels(y_train, 8) # one-versus-all labels
-    # svm.w = np.zeros([3073, 8])
+    y_train_ova = svm.make_one_versus_all_labels(y_train, 8)  # one-versus-all labels
+    svm.w = np.zeros([3073, 8])
     # grad = svm.compute_gradient(x_train, y_train_ova)
-    # loss = svm.compute_loss(x_train, y_train_ova)
+    loss = svm.compute_loss(x_train, y_train_ova)
+    print(loss)
