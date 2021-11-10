@@ -45,11 +45,18 @@ class SVM:
         returns : numpy array of shape (num_features, num_classes)
         """
         n, m = x.shape
-        regularization_grad = self.C * self.w
-        hinge_loss_pow_one = np.maximum(0, 2 - (x @ self.w) * y)
-        hinge_loss_grad = -2 / n * np.transpose(x) @ (y * hinge_loss_pow_one)
+        # regularization_grad = self.C * self.w
+        # hinge_loss_pow_one = np.maximum(0, 2 - (x @ self.w) * y)
+        # hinge_loss_grad = -2 / n * np.transpose(x) @ hinge_loss_pow_one
 
-        return regularization_grad + hinge_loss_grad
+        maxes = np.maximum(0, 2 - (x @ self.w) * y)
+        a = 2 - (x @ self.w) * y
+        ones_or_zeros = (a > 0).astype(int)
+
+        test = -2/n * (np.transpose(x) @ (y * maxes * ones_or_zeros))
+
+        return test
+
 
     # Batcher function
     def minibatch(self, iterable1, iterable2, size=1):
@@ -157,8 +164,8 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test = load_data()
 
     # print("Fitting the model...")
-    # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
-    # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
+    svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
+    train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
     # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
