@@ -33,8 +33,8 @@ class SVM:
         """
         n, m = x.shape
         hinge_loss = 1/n * np.sum(np.maximum(0, 2 - (x @ self.w) * y)**2)
-        regularisation = self.C/2 * np.sum(np.linalg.norm(self.w)**2)
-        loss = float(hinge_loss + regularisation)
+        regularisation_loss = self.C/2 * np.sum(np.linalg.norm(self.w, ord=2)**2)
+        loss = float(hinge_loss + regularisation_loss)
 
         return loss
 
@@ -44,7 +44,12 @@ class SVM:
         y : numpy array of shape (minibatch size, num_classes)
         returns : numpy array of shape (num_features, num_classes)
         """
-        pass
+        n, m = x.shape
+        regularization_grad = self.C * self.w
+        hinge_loss_pow_one = np.maximum(0, 2 - (x @ self.w) * y)
+        hinge_loss_grad = -2 / n * np.transpose(x) @ (y * hinge_loss_pow_one)
+
+        return regularization_grad + hinge_loss_grad
 
     # Batcher function
     def minibatch(self, iterable1, iterable2, size=1):
@@ -152,15 +157,62 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test = load_data()
 
     # print("Fitting the model...")
-    svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
+    # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
     # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
-    # # to infer after training, do the following:
+    # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
-
-    ## to compute the gradient or loss before training, do the following:
-    y_train_ova = svm.make_one_versus_all_labels(y_train, 8)  # one-versus-all labels
-    svm.w = np.zeros([3073, 8])
-    y_inferred = svm.infer(x_test)
+    #
+    # ## to compute the gradient or loss before training, do the following:
+    # y_train_ova = svm.make_one_versus_all_labels(y_train, 8)  # one-versus-all labels
+    # svm.w = np.zeros([3073, 8])
+    # y_inferred = svm.infer(x_test)
     # grad = svm.compute_gradient(x_train, y_train_ova)
-    loss = svm.compute_loss(x_train, y_train_ova)
+    # loss = svm.compute_loss(x_train, y_train_ova)
+
+
+#     # graph gen
+#     import matplotlib.pyplot as plt
+#
+#     epochs = 200
+#     c_values = [1, 10, 30]
+#     nb_c = len(c_values)
+#     # train_losses = np.empty((nb_c, epochs))
+#     # train_accs = np.empty((nb_c, epochs))
+#     # test_losses = np.empty((nb_c, epochs))
+#     # test_accs = np.empty((nb_c, epochs))
+#     #
+#     # for i, c in enumerate(c_values):
+#     #
+#     #     svm = SVM(eta=0.0001, C=c, niter=epochs, batch_size=5000, verbose=False)
+#     #     train_losses[i], train_accs[i], test_losses[i], test_accs[i] = svm.fit(x_train, y_train, x_test, y_test)
+#
+#
+#     # np.save('train_losses', train_losses)
+#     # np.save('train_accs', train_accs)
+#     # np.save('test_losses', test_losses)
+#     # np.save('test_accs', test_accs)
+#
+#
+#
+#     train_losses = np.load('train_losses.npy')
+#     train_accs = np.load('train_accs.npy')
+#     test_losses = np.load('test_losses.npy')
+#     test_accs = np.load('train_accs.npy')
+#
+# def plot_for_c(title, arrays, labels, y_label):
+#
+#     plt.plot(arrays[0], label=labels[0])
+#     plt.plot(arrays[1], label=labels[1])
+#     plt.plot(arrays[2], label=labels[2])
+#     plt.legend()
+#     plt.title(title + ' comparison by c value')
+#     plt.xlabel('epochs')
+#     plt.ylabel(y_label)
+#     plt.show()
+#
+#
+# plot_for_c('Train Loss', train_losses, c_values, 'loss')
+# plot_for_c('Train Accuracy', train_accs, c_values, 'accuracy')
+# plot_for_c('Test Loss', test_losses, c_values, 'accuracy')
+# plot_for_c('Test Accuracy', test_accs, c_values, 'loss')
