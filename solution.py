@@ -160,8 +160,8 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test = load_data()
 
     # print("Fitting the model...")
-    # svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
-    # train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
+    svm = SVM(eta=0.0001, C=2, niter=200, batch_size=5000, verbose=False)
+    train_losses, train_accs, test_losses, test_accs = svm.fit(x_train, y_train, x_test, y_test)
 
     # to infer after training, do the following:
     # y_inferred = svm.infer(x_test)
